@@ -1,0 +1,6 @@
+CREATE TABLE common_words(
+	id BIGSERIAL PRIMARY KEY,
+	word VARCHAR NOT NULL,
+	lang_code VARCHAR NOT NULL
+);
+

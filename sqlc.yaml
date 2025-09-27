@@ -1,0 +1,13 @@
+version: "2"
+servers:
+  - engine: "postgresql"
+    uri: "postgres://rootuser:rootpassword@localhost:5432/langconnect"
+sql:
+  - engine: "postgresql"
+    queries: "query.sql"
+    schema: "schema.sql"
+    gen:
+      go:
+        package: "lang_repository"
+        out: "lang_repository"
+        sql_package: "pgx/v5"
