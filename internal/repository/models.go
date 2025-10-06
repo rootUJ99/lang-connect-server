@@ -2,10 +2,77 @@
 // versions:
 //   sqlc v1.30.0
 
-package lang_repository
+package repository
 
-type CommonWord struct {
-	ID       int64
-	Word     string
-	LangCode string
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+type Concept struct {
+	ConceptID   int64
+	Description string
+	Source      pgtype.Text
+	Metadata    []byte
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
+type Language struct {
+	LanguageID  int32
+	Code        string
+	Name        string
+	NativeName  string
+	Script      pgtype.Text
+	Description pgtype.Text
+	Metadata    []byte
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
+type Sentence struct {
+	SentenceID        int64
+	LanguageID        int32
+	Source            pgtype.Text
+	SentenceText      pgtype.Text
+	RomanizedSentence pgtype.Text
+	EnTranslation     pgtype.Text
+	Metadata          []byte
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+}
+
+type SentenceConceptMap struct {
+	SentenceID int32
+	ConceptID  int32
+}
+
+type SentenceTermMap struct {
+	SentenceID int32
+	TermID     int32
+}
+
+type Term struct {
+	TermID        int64
+	LanguageID    int32
+	BaseFormID    pgtype.Int4
+	TermText      string
+	RomanizedText string
+	EnTranslation pgtype.Text
+	PartOfSpeech  pgtype.Text
+	Gender        pgtype.Text
+	Plurality     pgtype.Text
+	Metadata      []byte
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+}
+
+type TermConceptMap struct {
+	TermID    int32
+	ConceptID int32
+}
+
+type TermRelationMap struct {
+	TermId1  int32
+	TermId2  int32
+	Relation string
 }
