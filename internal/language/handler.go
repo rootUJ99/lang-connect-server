@@ -135,18 +135,28 @@ func (h Handler) ListLanguageHandler(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.service.ListLanguagesService(context.Background())
 
+
 	if (err != nil){
 		jsonutil.SendJson(w, 400, GenericJSONMesage{ Message: "Something went wrong"})
 		return
 	}
 		
-	var langJsonList  []LangCodeJSON
+	slog.Info("data received from service", "data", fmt.Sprintf("%s", result))
+
+	var langJsonList  []LangCodeJSONWithEmpty
 
 	for _, ele := range(result) {
-		langJsonList =  append(langJsonList, LangCodeJSON{ Name: ele.Name, Code: ele.Code, NativeName: ele.NativeName})	
+		langJsonList =  append(langJsonList, LangCodeJSONWithEmpty{ 
+			Name: &ele.Name, 
+			Code: &ele.Code, 
+			NativeName: &ele.NativeName, 
+			Description: &ele.Description, 
+			Script: &ele.Script, 
+			})	
 	}
+	slog.Info("data received from service", "lang list", fmt.Sprintf("%s", langJsonList))
 	
-	restJson := make(map[string][]LangCodeJSON)
+	restJson := make(map[string][]LangCodeJSONWithEmpty)
 	restJson["result"] = langJsonList
 	err = jsonutil.SendJson(w, 200, restJson)
 	if (err != nil) {

@@ -1,7 +1,8 @@
-package language 
+package language
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 
@@ -20,14 +21,19 @@ func NewLanguageService(querry *repository.Queries)Service{
 }
 
 func (s Service) CreateLanguageService (ctx context.Context, requestJson LangCodeJSON) (bool, error){
-	langWord := repository.CreateLanguageParams{
+	byteMetadatJson, err :=json.Marshal(requestJson.Metadata)
+	if err != nil {
+		return false, err
+	}
+	languageRequest := repository.CreateLanguageParams{
 			Name: requestJson.Name,
 			Code: requestJson.Code,
 			NativeName: requestJson.NativeName,
 			Description: requestJson.Description,
 			Script: requestJson.Script,
+			Metadata: byteMetadatJson,
 		}	
-	result, err:= s.querry.CreateLanguage(ctx, langWord)
+	result, err:= s.querry.CreateLanguage(ctx, languageRequest)
 	if err != nil {
 		return false, err
 	}
@@ -43,27 +49,41 @@ func (s Service) UpdateLanguageService (ctx context.Context, requestJson LangCod
 	if err != nil {
 		return false, err
 	}
-	updatedWords := repository.UpdateLanguageByIdParams{LanguageID: result.LanguageID}	
-	if (requestJson.Name != "") {
-		updatedWords.Name = requestJson.Name
-	} else { 
-		updatedWords.Name = result.Name
-	} 
-	if (requestJson.Code != "") {
-		updatedWords.Code = requestJson.Code
-	} else {
-		updatedWords.Code = result.Code
-	} 
+	updatedLanguage := repository.UpdateLanguageByIdParams{
+		LanguageID: result.LanguageID,
+		Code :result.Code,
+		Name :result.Name,
+		NativeName: result.NativeName,
+		Script: result.Script,
+		Description: result.Description,
+		Metadata: result.Metadata,
+	}	
+	slog.Info("the jsonData", "", fmt.Sprintf("%s %s %s \n", updatedLanguage.Code, updatedLanguage.Name, updatedLanguage.Script ))
+	if requestJson.Name != nil {
+		updatedLanguage.Name = *requestJson.Name
+	}
+	if requestJson.Code != nil {
+		updatedLanguage.Code = *requestJson.Code
+	}
+	if requestJson.NativeName != nil {
+		updatedLanguage.NativeName = *requestJson.NativeName
+	}
+	if requestJson.Description != nil {
+		updatedLanguage.Description = *requestJson.Description
+	}
+	if requestJson.Script != nil {
+		updatedLanguage.Script = *requestJson.Script
+	}
 
-	result, err = s.querry.UpdateLanguageById(context.Background(), updatedWords)
+	result, err = s.querry.UpdateLanguageById(context.Background(), updatedLanguage)
 
-	slog.Info(fmt.Sprintf("got updated value %s", result))
+	slog.Info(fmt.Sprintf("got updated value %s", updatedLanguage))
 
 	if err != nil {
 		return false, err
 	}
 	
-	slog.Info(fmt.Sprintf("data updated %s, %s, %s", result.Code, result.Name, result.LanguageID))
+	// slog.Info(fmt.Sprintf("data updated %s, %s, %s", result.Code, result.Name, result.LanguageID))
 	
 	return true, nil
 }

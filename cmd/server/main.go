@@ -65,7 +65,7 @@ func main() {
 	rw.Delete("/delete", languageHandler.DeleteLanguageHandler)
 	rw.Get("/list", languageHandler.ListLanguageHandler)
 
-	r.Mount("/word", rw)
+	r.Mount("/language", rw)
 	
 	const PORT string = ":3141"
 	slog.Info("Listening on", "PORT", PORT)	
