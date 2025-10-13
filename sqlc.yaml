@@ -8,6 +8,6 @@ sql:
     schema: "db/migrations"
     gen:
       go:
-        package: "repository"
-        out: "internal/repository"
+        package: "platform_postgres"
+        out: "internal/platform/repository"
         sql_package: "pgx/v5"

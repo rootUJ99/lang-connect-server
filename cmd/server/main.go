@@ -11,7 +11,8 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
-	repository "github.com/rootUJ99/lang-connect-server/internal/repository"
+	repository "github.com/rootUJ99/lang-connect-server/internal/platform/postgres"
+
 	"github.com/rootUJ99/lang-connect-server/internal/language"
 )
 
@@ -42,8 +43,9 @@ func main() {
 
 	defer conn.Close(context.Background())
 
-	querry := repository.New(conn)
-	languaageService := language.NewLanguageService(querry)
+	query := repository.New(conn)
+	languageRepository := language.NewLangRepo(query)
+	languaageService := language.NewLanguageService(languageRepository)
 	languageHandler := language.NewLanguageHandler(languaageService)
 
 	r.Use(middleware.Logger)
